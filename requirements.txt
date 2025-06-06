@@ -1,0 +1,24 @@
+# Intentionally vulnerable - outdated FastAPI version
+fastapi==0.68.0
+# Intentionally vulnerable - outdated uvicorn version
+uvicorn==0.15.0
+# Intentionally vulnerable - outdated SQLAlchemy version
+sqlalchemy==1.4.23
+# Intentionally vulnerable - outdated pydantic version
+pydantic==1.8.2
+# Intentionally vulnerable - outdated python-jose version
+python-jose==3.3.0
+# Intentionally vulnerable - outdated passlib version
+passlib==1.7.4
+# Intentionally vulnerable - outdated python-multipart version
+python-multipart==0.0.5
+# Intentionally vulnerable - outdated requests version
+requests==2.26.0
+# Intentionally vulnerable - outdated aiohttp version
+aiohttp==3.7.4
+# Intentionally vulnerable - outdated redis version
+redis==3.5.3
+# Intentionally vulnerable - outdated cryptography version
+cryptography==3.4.7
+# Intentionally vulnerable - outdated pyjwt version
+pyjwt==2.1.0 
