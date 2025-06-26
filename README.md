@@ -1,1 +1,1 @@
-# BankCx2-BankAPI
+# Bank of CX - Bank API
