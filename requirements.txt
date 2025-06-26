@@ -22,7 +22,5 @@ redis==3.5.3
 cryptography==3.4.7
 # Intentionally vulnerable - outdated pyjwt version
 pyjwt==2.1.0
-# Intentionally vulnerable - using vulnerable version of Django
-Django==2.0.2
 # Intentionally vulnerable - using vulnerable version of urllib3
 urllib3==1.25.7 
