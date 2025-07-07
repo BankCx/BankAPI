@@ -1,28 +1,14 @@
-# Intentionally vulnerable - outdated Flask version
-flask==2.0.1
-# Intentionally vulnerable - outdated Werkzeug version
-werkzeug==2.0.1
-# Intentionally vulnerable - outdated Flask-CORS version
-flask-cors==3.0.10
-# Intentionally vulnerable - outdated SQLAlchemy version
-sqlalchemy==1.4.23
-# Intentionally vulnerable - outdated pydantic version
+Flask==2.0.1
+Werkzeug==2.0.1
+Flask-CORS==3.0.10
+SQLAlchemy==1.4.23
 pydantic==1.8.2
-# Intentionally vulnerable - outdated python-jose version
 python-jose==3.3.0
-# Intentionally vulnerable - outdated passlib version
 passlib==1.7.4
-# Intentionally vulnerable - outdated python-multipart version
 python-multipart==0.0.5
-# Intentionally vulnerable - outdated requests version
 requests==2.26.0
-# Intentionally vulnerable - outdated aiohttp version
-aiohttp==3.7.4
-# Intentionally vulnerable - outdated redis version
+aiohttp==3.8.1
 redis==3.5.3
-# Intentionally vulnerable - outdated cryptography version
-cryptography==3.4.7
-# Intentionally vulnerable - outdated pyjwt version
+cryptography==3.4.8
 pyjwt==2.1.0
-# Intentionally vulnerable - using vulnerable version of urllib3
-urllib3==1.25.7 
+urllib3==1.26.6 

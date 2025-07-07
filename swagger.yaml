@@ -1,476 +1,24 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   title: Bank of Checkmarx API
-  description: |
-    Intentionally vulnerable banking API for security testing and demonstration purposes.
-    
-    **⚠️ WARNING: This API contains intentionally vulnerable endpoints for security testing only.**
-    **Do not use in production environments.**
-    
-    ## Vulnerability Categories:
-    - Command Injection (10 endpoints)
-    - Server-Side Request Forgery (SSRF) (8 endpoints)
-    - JWT Token Vulnerabilities (10 endpoints)
-    - SQL Injection (existing endpoints)
-    - Path Traversal (existing endpoints)
-    - Insecure Deserialization (existing endpoints)
-    - No Input Validation (all endpoints)
-    - Weak Authentication (all endpoints)
-    - CORS Misconfiguration (all endpoints)
-    - No Rate Limiting (all endpoints)
-    
-    ## Security Testing:
-    This API is designed for security testing, vulnerability research, and security tool evaluation.
-    All vulnerabilities are intentionally included for demonstration purposes.
-    
+  description: API for the Bank of Checkmarx demo application
   version: 1.0.0
   contact:
-    name: Checkmarx Demo Team
-    email: demo@checkmarx.com
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
+    name: Bank of Checkmarx
+    email: support@bankofcheckmarx.com
 
 servers:
   - url: http://localhost:8000
-    description: Local development server
-  - url: https://api.bankofcheckmarx.com
-    description: Production server (demo only)
-
-tags:
-  - name: Authentication
-    description: JWT authentication endpoints with various vulnerabilities
-  - name: Banking
-    description: Core banking operations with SQL injection vulnerabilities
-  - name: Command Injection
-    description: Network and file system command injection vulnerabilities
-  - name: SSRF
-    description: Server-Side Request Forgery vulnerabilities
-  - name: File Operations
-    description: File upload and processing with path traversal vulnerabilities
-  - name: Data Processing
-    description: Data parsing and processing with deserialization vulnerabilities
-  - name: System Info
-    description: System information and network operations
+    description: Development server
 
 paths:
-  # ========================================
-  # AUTHENTICATION ENDPOINTS
-  # ========================================
-  
-  /api/v1/login:
-    post:
-      tags:
-        - Authentication
-      summary: Login with weak JWT implementation
-      description: |
-        **Vulnerability**: Weak JWT implementation with hardcoded secret
-        - No proper password validation
-        - No rate limiting
-        - Weak secret key
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: "admin"
-                password:
-                  type: string
-                  example: "password"
+  /api/v1/health:
+    get:
+      summary: Health check
+      description: Check if the API is running
       responses:
         '200':
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-
-  /api/v1/login-weak-jwt:
-    post:
-      tags:
-        - Authentication
-      summary: Login with 'none' algorithm JWT
-      description: |
-        **Vulnerability**: JWT using 'none' algorithm
-        - Allows token forgery
-        - No signature verification
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Login successful with vulnerable JWT
-
-  /api/v1/login-no-exp:
-    post:
-      tags:
-        - Authentication
-      summary: Login with JWT without expiration
-      description: |
-        **Vulnerability**: JWT with no expiration time
-        - Tokens never expire
-        - Session hijacking risk
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Login successful with non-expiring JWT
-
-  /api/v1/login-weak-secret:
-    post:
-      tags:
-        - Authentication
-      summary: Login with weak JWT secret
-      description: |
-        **Vulnerability**: JWT with weak secret "123456"
-        - Easily guessable secret
-        - Token forgery possible
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Login successful with weak JWT
-
-  /api/v1/login-excessive-claims:
-    post:
-      tags:
-        - Authentication
-      summary: Login with sensitive data in JWT claims
-      description: |
-        **Vulnerability**: JWT containing sensitive data
-        - Password in JWT
-        - SSN in JWT
-        - Credit card in JWT
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: Login successful with sensitive data in JWT
-
-  /api/v1/verify-token:
-    post:
-      tags:
-        - Authentication
-      summary: Verify JWT token with no algorithm specification
-      description: |
-        **Vulnerability**: JWT validation with no algorithm specification
-        - Algorithm confusion attack possible
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-      responses:
-        '200':
-          description: Token verification result
-
-  # ========================================
-  # COMMAND INJECTION ENDPOINTS
-  # ========================================
-
-  /api/v1/ping:
-    post:
-      tags:
-        - Command Injection
-      summary: Ping host with command injection
-      description: |
-        **Vulnerability**: Command injection via ping command
-        - Payload: `{"host": "localhost; cat /etc/passwd"}`
-        - Uses shell=True
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                host:
-                  type: string
-                  example: "localhost"
-      responses:
-        '200':
-          description: Ping result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: string
-
-  /api/v1/dns-lookup:
-    post:
-      tags:
-        - Command Injection
-      summary: DNS lookup with command injection
-      description: |
-        **Vulnerability**: Command injection via nslookup
-        - Payload: `{"domain": "google.com; whoami"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                domain:
-                  type: string
-                  example: "google.com"
-      responses:
-        '200':
-          description: DNS lookup result
-
-  /api/v1/whois:
-    post:
-      tags:
-        - Command Injection
-      summary: Whois lookup with command injection
-      description: |
-        **Vulnerability**: Command injection via whois
-        - Payload: `{"domain": "google.com; id"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                domain:
-                  type: string
-                  example: "google.com"
-      responses:
-        '200':
-          description: Whois lookup result
-
-  /api/v1/system-info:
-    post:
-      tags:
-        - Command Injection
-      summary: System information with command injection
-      description: |
-        **Vulnerability**: Direct command execution
-        - Payload: `{"command": "uname -a; cat /etc/passwd"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                command:
-                  type: string
-                  example: "uname -a"
-      responses:
-        '200':
-          description: System information result
-
-  /api/v1/file-operations:
-    post:
-      tags:
-        - Command Injection
-      summary: File operations with command injection
-      description: |
-        **Vulnerability**: Command injection via file operations
-        - Payload: `{"operation": "ls", "path": ".; cat /etc/passwd"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                operation:
-                  type: string
-                  example: "ls"
-                path:
-                  type: string
-                  example: "."
-      responses:
-        '200':
-          description: File operation result
-
-  # ========================================
-  # SSRF ENDPOINTS
-  # ========================================
-
-  /api/v1/fetch-url:
-    post:
-      tags:
-        - SSRF
-      summary: Fetch URL with SSRF vulnerability
-      description: |
-        **Vulnerability**: Server-Side Request Forgery via requests
-        - No URL validation
-        - Payload: `{"url": "http://169.254.169.254/latest/meta-data/"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  example: "https://httpbin.org/get"
-      responses:
-        '200':
-          description: URL fetch result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status_code:
-                    type: integer
-                  content:
-                    type: string
-                  headers:
-                    type: object
-
-  /api/v1/fetch-urllib:
-    post:
-      tags:
-        - SSRF
-      summary: Fetch URL with urllib SSRF
-      description: |
-        **Vulnerability**: SSRF via urllib.request.urlopen
-        - No URL validation
-        - Payload: `{"url": "http://internal-service/admin"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  example: "https://httpbin.org/get"
-      responses:
-        '200':
-          description: URL fetch result
-
-  /api/v1/curl:
-    post:
-      tags:
-        - SSRF
-      summary: Fetch URL with curl command injection
-      description: |
-        **Vulnerability**: SSRF and command injection via curl
-        - Payload: `{"url": "http://internal-service/admin"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  example: "https://httpbin.org/get"
-      responses:
-        '200':
-          description: Curl result
-
-  /api/v1/wget:
-    post:
-      tags:
-        - SSRF
-      summary: Fetch URL with wget command injection
-      description: |
-        **Vulnerability**: SSRF and command injection via wget
-        - Payload: `{"url": "http://internal-service/admin"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  example: "https://httpbin.org/get"
-      responses:
-        '200':
-          description: Wget result
-
-  # ========================================
-  # BANKING ENDPOINTS
-  # ========================================
-
-  /api/v1/transfers:
-    post:
-      tags:
-        - Banking
-      summary: Create transfer with no validation
-      description: |
-        **Vulnerability**: No input validation or authorization
-        - No amount limits
-        - No account ownership verification
-        - No transaction limits
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                from_account:
-                  type: string
-                to_account:
-                  type: string
-                amount:
-                  type: number
-      responses:
-        '200':
-          description: Transfer created
+          description: API is healthy
           content:
             application/json:
               schema:
@@ -478,273 +26,146 @@ paths:
                 properties:
                   status:
                     type: string
-                  transfer_id:
-                    type: string
+                    example: "healthy"
+
+  /api/v1/accounts:
+    get:
+      summary: Get all accounts
+      description: Retrieve all bank accounts
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
 
   /api/v1/accounts/{account_id}:
     get:
-      tags:
-        - Banking
-      summary: Get account with SQL injection
-      description: |
-        **Vulnerability**: SQL injection and no authorization
-        - No account ownership check
-        - SQL injection possible
+      summary: Get account by ID
+      description: Retrieve a specific account by ID
       parameters:
         - name: account_id
           in: path
           required: true
           schema:
             type: string
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Account information
+          description: Account details
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  account_id:
-                    type: string
-                  balance:
-                    type: number
+                $ref: '#/components/schemas/Account'
+        '404':
+          description: Account not found
 
   /api/v1/transactions:
     get:
-      tags:
-        - Banking
-      summary: Get transactions with no pagination
-      description: |
-        **Vulnerability**: No pagination or data validation
-        - Can return unlimited data
-        - No input validation
-      parameters:
-        - name: account_id
-          in: query
-          schema:
-            type: string
+      summary: Get all transactions
+      description: Retrieve all transactions
+      security:
+        - bearerAuth: []
       responses:
         '200':
-          description: Transaction list
+          description: List of transactions
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  transactions:
-                    type: array
-                    items:
-                      type: object
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
 
-  # ========================================
-  # FILE OPERATIONS
-  # ========================================
-
-  /api/v1/upload:
+  /api/v1/transactions:
     post:
-      tags:
-        - File Operations
-      summary: Upload file with no validation
-      description: |
-        **Vulnerability**: No file type or size validation
-        - Accepts any file type
-        - No size limits
-        - Path traversal possible
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        '200':
-          description: File uploaded
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  filename:
-                    type: string
-
-  /api/v1/process-file:
-    post:
-      tags:
-        - File Operations
-      summary: Process file with command injection
-      description: |
-        **Vulnerability**: Command injection via file processing
-        - Payload: `{"file_path": "/tmp/file; cat /etc/passwd"}`
+      summary: Create transaction
+      description: Create a new transaction
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                file_path:
-                  type: string
+              $ref: '#/components/schemas/TransactionRequest'
+      security:
+        - bearerAuth: []
       responses:
-        '200':
-          description: File processing result
-
-  # ========================================
-  # DATA PROCESSING
-  # ========================================
-
-  /api/v1/batch-process:
-    post:
-      tags:
-        - Data Processing
-      summary: Batch process with insecure deserialization
-      description: |
-        **Vulnerability**: Insecure JSON deserialization
-        - No input validation
-        - Payload: `{"data": "malicious_json"}`
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: string
-      responses:
-        '200':
-          description: Batch processing result
-
-  /api/v1/log:
-    post:
-      tags:
-        - Data Processing
-      summary: Log event with sensitive data exposure
-      description: |
-        **Vulnerability**: Logging sensitive data
-        - No data sanitization
-        - Sensitive data exposure
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '200':
-          description: Event logged
-
-  # ========================================
-  # API KEY ENDPOINTS
-  # ========================================
-
-  /api/v1/sensitive-data:
-    get:
-      tags:
-        - Banking
-      summary: Get sensitive data with weak API key validation
-      description: |
-        **Vulnerability**: Hardcoded API key check
-        - Weak API key validation
-        - Hardcoded key: "test-api-key-123"
-      parameters:
-        - name: api_key
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Sensitive data
+        '201':
+          description: Transaction created
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-        '401':
-          description: Invalid API key
+                $ref: '#/components/schemas/Transaction'
 
 components:
-  schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        detail:
-          type: string
-
   securitySchemes:
-    BearerAuth:
+    bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: |
-        **Vulnerability**: Weak JWT implementation
-        - Hardcoded secret key
-        - Weak algorithms supported
-        - No proper validation
 
-security:
-  - BearerAuth: []
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+        account_number:
+          type: string
+        balance:
+          type: number
+        currency:
+          type: string
+        account_type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
 
-x-tagGroups:
-  - name: Vulnerable Endpoints
-    tags:
-      - Authentication
-      - Command Injection
-      - SSRF
-      - Banking
-      - File Operations
-      - Data Processing
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        from_account:
+          type: string
+        to_account:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        transaction_type:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
 
-x-vulnerabilities:
-  command_injection:
-    - /api/v1/ping
-    - /api/v1/dns-lookup
-    - /api/v1/whois
-    - /api/v1/system-info
-    - /api/v1/file-operations
-    - /api/traceroute
-    - /api/dig
-    - /api/netstat
-    - /api/find
-    - /api/grep
-  ssrf:
-    - /api/v1/fetch-url
-    - /api/v1/fetch-urllib
-    - /api/v1/curl
-    - /api/v1/wget
-    - /api/ftp
-    - /api/telnet
-    - /api/netcat
-    - /api/lynx
-  jwt_vulnerabilities:
-    - /api/v1/login-weak-jwt
-    - /api/v1/login-no-exp
-    - /api/v1/login-weak-secret
-    - /api/v1/login-excessive-claims
-    - /api/v1/verify-token
-    - /api/login-algorithm-confusion
-    - /api/login-kid-injection
-    - /api/login-jku-injection
-    - /api/login-no-verify
-    - /api/login-predictable
-  sql_injection:
-    - /api/login
-    - /api/transfer
-    - /api/search
-    - /api/account/{account_id}
-    - /api/balance
-    - /api/account/{account_id}
-  path_traversal:
-    - /api/documents/{filename}
-    - /api/download/{filename}
-  insecure_deserialization:
-    - /api/deserialize
-    - /api/v1/batch-process 
+    TransactionRequest:
+      type: object
+      required:
+        - from_account
+        - to_account
+        - amount
+        - currency
+      properties:
+        from_account:
+          type: string
+        to_account:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        transaction_type:
+          type: string
+          default: "transfer" 
