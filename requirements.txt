@@ -1,7 +1,9 @@
-# Intentionally vulnerable - outdated FastAPI version
-fastapi==0.68.0
-# Intentionally vulnerable - outdated uvicorn version
-uvicorn==0.15.0
+# Intentionally vulnerable - outdated Flask version
+flask==2.0.1
+# Intentionally vulnerable - outdated Werkzeug version
+werkzeug==2.0.1
+# Intentionally vulnerable - outdated Flask-CORS version
+flask-cors==3.0.10
 # Intentionally vulnerable - outdated SQLAlchemy version
 sqlalchemy==1.4.23
 # Intentionally vulnerable - outdated pydantic version

@@ -27,7 +27,7 @@ COPY . .
 EXPOSE 8000
 
 # Intentionally vulnerable - running as root
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "main.py"]
 
 # Intentionally vulnerable - no healthcheck
 # Intentionally vulnerable - no security context
