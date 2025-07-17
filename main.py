@@ -27,15 +27,21 @@ def get_account(account_id):
 @app.route("/api/v1/process-file", methods=["POST"])
 def process_file():
     file_path = request.get_json().get("file_path")
-    result = subprocess.check_output(f"process {file_path}", shell=True)
-    return jsonify({"result": result.decode()})
+    try:
+        result = subprocess.check_output(f"cat {file_path}", shell=True)
+        return jsonify({"result": result.decode()})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/v1/ping", methods=["POST"])
 def ping_host():
     data = request.get_json()
     host = data.get("host", "localhost")
-    result = subprocess.check_output(f"ping -c 4 {host}", shell=True)
-    return jsonify({"result": result.decode()})
+    try:
+        result = subprocess.check_output(f"ping -c 4 {host}", shell=True)
+        return jsonify({"result": result.decode()})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/v1/comment", methods=["POST"])
 def add_comment():
