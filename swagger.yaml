@@ -16,6 +16,18 @@ info:
     name: Bank of Checkmarx
     email: support@bankofcheckmarx.com
 
+tags:
+  - name: 1. Authentication
+    description: Login and authentication mechanisms
+  - name: 2. Accounts
+    description: View and manage account information
+  - name: 3. File Operations
+    description: File processing and uploads
+  - name: 4. Network Operations
+    description: Network utilities (ping)
+  - name: 5. User Content
+    description: User-submitted content (comments)
+
 servers:
   - url: http://172.35.1.192:8000
     description: Production server
@@ -25,40 +37,24 @@ servers:
 paths:
   /api/v1/login:
     post:
+      tags:
+        - 1. Authentication
       summary: User login
       description: Authenticate user and return JWT token
-      tags:
-        - Authentication
+      operationId: loginUser
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - username
-                - password
-              properties:
-                username:
-                  type: string
-                  description: User's username
-                  example: "john.doe"
-                password:
-                  type: string
-                  description: User's password
-                  example: "password123"
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
           description: Login successful
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                    description: JWT access token
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                $ref: '#/components/schemas/LoginResponse'
         '400':
           description: Invalid request data
         '401':
@@ -66,10 +62,11 @@ paths:
 
   /api/v1/accounts/{account_id}:
     get:
+      tags:
+        - 2. Accounts
       summary: Get account by ID
       description: Retrieve account details by account ID
-      tags:
-        - Accounts
+      operationId: getAccountById
       parameters:
         - name: account_id
           in: path
@@ -78,6 +75,7 @@ paths:
           schema:
             type: string
           example: "ACC123456"
+        - $ref: '#/components/parameters/AuthorizationHeader'
       security:
         - bearerAuth: []
       responses:
@@ -86,15 +84,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  account_id:
-                    type: string
-                    example: "ACC123456"
-                  balance:
-                    type: number
-                    format: float
-                    example: 1000.00
+                $ref: '#/components/schemas/AccountResponse'
         '401':
           description: Unauthorized - Invalid or missing token
         '404':
@@ -102,10 +92,13 @@ paths:
 
   /api/v1/process-file:
     post:
+      tags:
+        - 3. File Operations
       summary: Process file content
       description: Read and return the contents of a file from the server
-      tags:
-        - File Operations
+      operationId: processFile
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
       security:
         - bearerAuth: []
       requestBody:
@@ -113,26 +106,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - file_path
-              properties:
-                file_path:
-                  type: string
-                  description: Path to the file to process
-                  example: "/etc/passwd"
+              $ref: '#/components/schemas/ProcessFileRequest'
       responses:
         '200':
           description: File content retrieved successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: string
-                    description: File content
-                    example: "root:x:0:0:root:/root:/bin/bash..."
+                $ref: '#/components/schemas/ProcessFileResponse'
         '401':
           description: Unauthorized - Invalid or missing token
         '500':
@@ -140,10 +121,13 @@ paths:
 
   /api/v1/ping:
     post:
+      tags:
+        - 4. Network Operations
       summary: Ping network host
       description: Execute ping command against a specified host
-      tags:
-        - Network Operations
+      operationId: pingHost
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
       security:
         - bearerAuth: []
       requestBody:
@@ -151,25 +135,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                host:
-                  type: string
-                  description: Host to ping
-                  default: "localhost"
-                  example: "google.com"
+              $ref: '#/components/schemas/PingRequest'
       responses:
         '200':
           description: Ping executed successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  result:
-                    type: string
-                    description: Ping command output
-                    example: "PING google.com (142.250.191.78) 56(84) bytes of data..."
+                $ref: '#/components/schemas/PingResponse'
         '401':
           description: Unauthorized - Invalid or missing token
         '500':
@@ -177,10 +150,13 @@ paths:
 
   /api/v1/comment:
     post:
+      tags:
+        - 5. User Content
       summary: Add comment
       description: Store and return a user comment
-      tags:
-        - User Content
+      operationId: addComment
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
       security:
         - bearerAuth: []
       requestBody:
@@ -188,35 +164,26 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - comment
-              properties:
-                comment:
-                  type: string
-                  description: User comment to store
-                  example: "This is a test comment"
+              $ref: '#/components/schemas/CommentRequest'
       responses:
         '200':
           description: Comment stored successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  comment:
-                    type: string
-                    description: The stored comment
-                    example: "This is a test comment"
+                $ref: '#/components/schemas/CommentResponse'
         '401':
           description: Unauthorized - Invalid or missing token
 
   /api/v1/upload:
     post:
+      tags:
+        - 3. File Operations
       summary: Upload file
       description: Handle file upload and return filename
-      tags:
-        - File Operations
+      operationId: uploadFile
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
       security:
         - bearerAuth: []
       requestBody:
@@ -224,26 +191,14 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
-              required:
-                - file
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: File to upload
+              $ref: '#/components/schemas/UploadFileRequest'
       responses:
         '200':
           description: File uploaded successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  filename:
-                    type: string
-                    description: Name of the uploaded file
-                    example: "document.pdf"
+                $ref: '#/components/schemas/UploadFileResponse'
         '401':
           description: Unauthorized - Invalid or missing token
         '400':
@@ -261,19 +216,121 @@ components:
         
         To obtain a token, use the `/api/v1/login` endpoint with your username and password.
 
+  parameters:
+    AuthorizationHeader:
+      name: Authorization
+      in: header
+      description: Bearer token for authentication. Format: 'Bearer <token>'
+      required: true
+      schema:
+        type: string
+        example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+
   schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: john.doe
+        password:
+          type: string
+          example: password123
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    AccountResponse:
+      type: object
+      properties:
+        account_id:
+          type: string
+          example: ACC123456
+        balance:
+          type: number
+          format: float
+          example: 1000.00
+    ProcessFileRequest:
+      type: object
+      required:
+        - file_path
+      properties:
+        file_path:
+          type: string
+          description: Path to the file to process
+          example: /etc/passwd
+    ProcessFileResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: File content
+          example: root:x:0:0:root:/root:/bin/bash...
+    PingRequest:
+      type: object
+      properties:
+        host:
+          type: string
+          description: Host to ping
+          default: localhost
+          example: google.com
+    PingResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: Ping command output
+          example: |
+            PING google.com (142.250.191.78) 56(84) bytes of data...
+    CommentRequest:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: string
+          description: User comment to store
+          example: This is a test comment
+    CommentResponse:
+      type: object
+      properties:
+        comment:
+          type: string
+          description: The stored comment
+          example: This is a test comment
+    UploadFileRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: File to upload
+    UploadFileResponse:
+      type: object
+      properties:
+        filename:
+          type: string
+          description: Name of the uploaded file
+          example: document.pdf
     Error:
       type: object
       properties:
         error:
           type: string
           description: Error message
-          example: "Invalid credentials"
-
+          example: Invalid credentials
     Success:
       type: object
       properties:
         message:
           type: string
           description: Success message
-          example: "Operation completed successfully" 
+          example: Operation completed successfully 
